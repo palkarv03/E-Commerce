@@ -1,0 +1,71 @@
+//post API
+[
+    {
+        "userLogin": {
+            "email": "vick@123",
+            "password": "vick123"
+        },
+        "address": {
+            "state": "mahaashtra",
+            "city": "thane",
+            "pinCode": 41004
+        },
+        "_id": "5d8ef981f5d80256b4f8f80f",
+        "firstname": "vicky",
+        "lastname": "palkr",
+        "userId": 1,
+        "mobileNo": 56535,
+        "__v": 0
+    },
+    {
+        "userLogin": {
+            "email": "harrish@123",
+            "password": "harrish123"
+        },
+        "address": {
+            "state": "mahaashtra",
+            "city": "bhanup",
+            "pinCode": 41004
+        },
+        "_id": "5d8ef9acf5d80256b4f8f810",
+        "firstname": "Harrish",
+        "lastname": "Gupta",
+        "userId": 2,
+        "mobileNo": 56535,
+        "__v": 0
+    },
+    {
+        "userLogin": {
+            "email": "adil@123",
+            "password": "adil123"
+        },
+        "address": {
+            "state": "mahaashtra",
+            "city": "mumbra",
+            "pinCode": 41004
+        },
+        "_id": "5d8ef9dcf5d80256b4f8f811",
+        "firstname": "Aadil",
+        "lastname": "kazii",
+        "userId": 3,
+        "mobileNo": 56535,
+        "__v": 0
+    },
+    {
+        "userLogin": {
+            "email": "Teja@123",
+            "password": "teja123"
+        },
+        "address": {
+            "state": "mahaashtra",
+            "city": "thane",
+            "pinCode": 41004
+        },
+        "_id": "5d8efa04f5d80256b4f8f812",
+        "firstname": "Tejas",
+        "lastname": "Sawant",
+        "userId": 4,
+        "mobileNo": 56535,
+        "__v": 0
+    }
+]

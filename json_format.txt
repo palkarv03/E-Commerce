@@ -1,0 +1,6 @@
+json file store 
+type command 
+ mongo import --db "__" --collection " "___" --file "_____.json" --jsonArray
+
+for eg
+mongo import admin --collection user --file user.json --jsonArray
