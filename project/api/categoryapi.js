@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 // const bcrypt = require("bcrypt");
 
+let admin = require("./middleware/admin");
+
 let category = require("../schema/productModel");
 
-router.post("/addCategory", async (req, res) => {
+router.post("/addCategory", [auth, admin], async (req, res) => {
   let { error } = category.ValidationError(req.body);
   if (error) {
     return res.status(401).send(error.details[0].message);
@@ -13,6 +15,7 @@ router.post("/addCategory", async (req, res) => {
   if (!subCat) {
     return res.status(402).send("Invalid subcategory Id");
   }
+  //Getting rid of duplicate categories
   let name = await category.category.findOne({
     catName: req.body.catName
   });
@@ -30,8 +33,39 @@ router.post("/addCategory", async (req, res) => {
   res.send({ data: items });
 });
 
+router.post("/addSubCategory", [auth, admin], async (req, res) => {
+  let { error } = category.SubCatValidationError(req.body);
+  if (error) {
+    return res.status(402).send(error.details[0].message);
+  }
+
+  //To get rid of  duplicate items
+  let data = await category.subCategory.findOne({
+    name: req.body.name
+  });
+
+  if (data) {
+    return res.status(402).send({
+      message: "Subcategory already Exists"
+    });
+  }
+
+  //Getting rid of duplicate categories
+  let subCat = new category.subCategory({
+    name: req.body.name
+  });
+
+  let data = await subCat.save();
+  res.send({ message: "SubCat Added Successfully", item: data });
+});
+
 router.get("/allCategory", async (req, res) => {
   let category = await category.category.find({});
+  if (!category) {
+    return res.status(402).send({
+      message: "No data found!!"
+    });
+  }
   res.send(category);
 });
 
@@ -43,7 +77,7 @@ router.get("/findCategoryById/:id", async (req, res) => {
   res.send(cat);
 });
 
-router.delete("/deleteCategoryById/:id", async (req, res) => {
+router.delete("/deleteCategoryById/:id", [auth, admin], async (req, res) => {
   let cat = await category.category.findById({ _id: req.params.id });
   if (!cat) {
     return res.status(401).send({ message: "Invalid id" });
@@ -61,11 +95,13 @@ router.get("/category/:category/page/:pageIdx", async (req, res) => {
   }
   let perPage = 9;
   let page = req.params.pageIdx || 1;
-  let pageData = await cat
-    .find({})
+  let pageData = await category.category
+    .findById({ _id: req.params.category })
     .skip(perPage * page - perPage)
     .limit(perPage);
-  let dataCount = await cat.find({}).count();
+  let dataCount = await category.category
+    .findById({ _id: req.params.category })
+    .count();
   let pageSize = Math.ceil(dataCount / perPage);
   res.send({
     perPage: perPage,
@@ -79,23 +115,29 @@ router.get("/category/:category/page/:pageIdx", async (req, res) => {
 router.get(
   "/category/:category/subcategory/:subcategory/page/:pageIdx",
   async (req, res) => {
-    let cat = await category.category.findById({ _id: req.params.category });
+    let cat = await category.category.find({ catName: req.params.category });
     if (!cat) {
-      return res.status(401).send("Invalid category id");
+      return res.status(401).send("Invalid category");
     }
-    let subCat = await category.subCategory.findById({
-      _id: req.params.subcategory
+    let subCat = await category.category.findById({
+      "subCat._id": req.params.subcategory
     });
     if (!subCat) {
       return res.status(402).send("Invalid subcategory Id");
     }
     let perPage = 9;
     let page = req.params.pageIdx || 1;
-    let pageData = await subCat
-      .find({})
+    let pageData = await category.category
+      .findById({
+        "subCat._id": req.params.subcategory
+      })
       .skip(perPage * page - perPage)
       .limit(perPage);
-    let dataCount = await subCat.find({}).count();
+    let dataCount = await category.category
+      .findById({
+        "subCat._id": req.params.subcategory
+      })
+      .count();
     let pageSize = Math.ceil(dataCount / perPage);
     res.send({
       perPage: perPage,

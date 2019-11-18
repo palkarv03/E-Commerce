@@ -17,7 +17,7 @@ router.get("/me", auth, async (req, res) => {
 
 //Get All User
 router.get("/allUser", async (req, res) => {
-  let user = await U.userModel.find({});
+  let user = await U.userModel.find({}).select("-userLogin.userPassword");
   if (!user) {
     return res.status(403).send("No Users Found!");
   }
@@ -44,7 +44,9 @@ router.post("/newUser", async (req, res) => {
     termsAcceptCheck: req.body.termsAcceptCheck,
     resetPasswordToken: req.body.resetPasswordToken,
     resetPasswordExpires: req.body.resetPasswordExpires,
-    isAdmin: req.body.isAdmin
+    isAdmin: req.body.isAdmin,
+    recordDate: Date.now(),
+    updateDate: Date.now()
   });
   let salt = await bcrypt.genSalt(10);
   data.userLogin.userPassword = await bcrypt.hash(

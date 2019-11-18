@@ -5,6 +5,7 @@ const crypto = require("crypto");
 let Model = require("../schema/userModel");
 let M = Model.model;
 
+//API for sending mail to user
 router.post("/userMail", async (req, res) => {
   try {
     let token = crypto.randomBytes(32).toString("hex");

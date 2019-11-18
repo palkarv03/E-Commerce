@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+// const joi = require("@hapi/joi");
 const U = require("../../schema/userModel");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");

@@ -7,8 +7,8 @@ let cartItemSchema = new mongoose.Schema({
   price: { type: Number, required: true, minlength: 1, maxlength: 10 },
   quantity: { type: Number, required: true, minlength: 1, maxlength: 10 },
   totalPrice: { type: Number, required: true, minlength: 1, maxlength: 10 },
-  recordDate: { type: Date, default: Date.now },
-  updateDate: { type: Date, default: Date.now }
+  recordDate: { type: Date, default: Date.now() },
+  updateDate: { type: Date, default: Date.now() }
 });
 let cartItemRecords = mongoose.model("cartItemRecords", cartItemSchema);
 

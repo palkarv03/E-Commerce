@@ -14,7 +14,7 @@ let userSchema = new mongoose.Schema({
   termsAcceptCheck: { type: Boolean, required: true },
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
-  isAdmin: { type: Boolean },
+  isAdmin: { type: Boolean, required: true },
   recordDate: { type: Date, default: Date.now() },
   updateDate: { type: Date, default: Date.now() }
 });
@@ -57,7 +57,7 @@ function ValidationError(message) {
     termsAcceptCheck: joi.boolean().required(),
     resetPasswordToken: joi.string(),
     resetPasswordExpires: joi.date(),
-    isAdmin: joi.boolean(),
+    isAdmin: joi.boolean().required(),
     recordDate: joi.date().default(Date.now()),
     updateDate: joi.date().default(Date.now())
   });

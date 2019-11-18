@@ -22,12 +22,21 @@ let productSchema = new mongoose.Schema({
   isTodayOffer: { type: Boolean, required: true },
   category: { type: String, required: true, minlength: 3, maxlength: 100 },
   subCategory: { type: String, required: true, minlength: 3, maxlength: 100 },
-  isAdmin: { type: Boolean },
-  recordDate: { type: Date, default: Date.now },
-  updateDate: { type: Date, default: Date.now }
+  isAdmin: { type: Boolean, required: true },
+  recordDate: { type: Date, default: Date.now() },
+  updateDate: { type: Date, default: Date.now() }
 });
 
 let productModel = mongoose.model("productRecord", productSchema);
+
+function SubCatValidationError(message) {
+  let Schema = joi.object().keys({
+    name: joi()
+      .string()
+      .required()
+  });
+  return Schema.validate(message);
+}
 
 function ValidationError(message) {
   let Schema = joi.object().keys({
@@ -78,7 +87,7 @@ function ProductValidationError(message) {
       .required()
       .min(3)
       .max(100),
-    isAdmin: joi.boolean(),
+    isAdmin: joi.boolean().required(),
     recordDate: joi.date().default(Date.now()),
     updateDate: joi.date().default(Date.now())
   });
@@ -90,5 +99,6 @@ module.exports = {
   category,
   productModel,
   ValidationError,
-  ProductValidationError
+  ProductValidationError,
+  SubCatValidationError
 };

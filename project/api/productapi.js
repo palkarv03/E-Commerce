@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 // const bcrypt = require("bcrypt");
 
+let admin = require("./middleware/admin");
+
 let product = require("../schema/productModel");
 
-router.post("/addProduct", async (req, res) => {
+router.post("/addProduct", [auth, admin], async (req, res) => {
   let { error } = product.ProductValidationError(req.body);
   if (error) {
     return res.status(401).send(error.details[0].message);
@@ -26,14 +28,22 @@ router.post("/addProduct", async (req, res) => {
     category: req.body.category,
     subCategory: req.body.subCategory,
     isAdmin: req.body.isAdmin,
-    recordDate: req.body.recordDate,
-    updateDate: req.body.updateDate
+    recordDate: JSON.parse(
+      ` ${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}} `
+    ),
+    updateDate: JSON.parse(
+      ` ${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}} `
+    )
   });
   let items = await data.save();
-  res.send({ data: items });
+  res.send({ message: "Product added successfully", data: items });
 });
 
-router.put("/updateProduct/:id", async (req, res) => {
+router.put("/updateProduct/:id", [auth, admin], async (req, res) => {
+  let { error } = product.ProductValidationError(req.body);
+  if (error) {
+    return res.status(402).send(error.details[0].message);
+  }
   let product = await product.productModel.findById({ _id: req.params.id });
   if (!product) {
     return res.status(401).send({ message: "Invalid Product Id" });
@@ -48,12 +58,13 @@ router.put("/updateProduct/:id", async (req, res) => {
   product.category = req.body.category;
   product.subCategory = req.body.subCategory;
   product.isAdmin = req.body.isAdmin;
-  product.recordDate = req.body.recordDate;
-  product.updateDate = req.body.updateDate;
+  product.updateDate = JSON.parse(
+    ` ${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}} `
+  );
 
   let items = await product.save();
 
-  res.send({ message: "updation successful", data: items });
+  res.send({ message: "updated successful", data: items });
 });
 
 router.get("/allProducts", async (req, res) => {
@@ -69,7 +80,7 @@ router.get("/findProductById/:id", async (req, res) => {
   res.send(prod);
 });
 
-router.delete("/deleteProductById/:id", async (req, res) => {
+router.delete("/deleteProductById/:id", [auth, admin], async (req, res) => {
   let prod = await product.productModel.findById({ _id: req.params.id });
   if (!prod) {
     return res.status(401).send({ message: "Invalid id" });
@@ -84,8 +95,13 @@ router.delete("/deleteProductById/:id", async (req, res) => {
 
 router.get("/latestProduct", async (req, res) => {
   let latprod = await product.productModel.find({
-    updateDate: { $eq: Date.now() }
+    updateDate: {
+      $eq: JSON.parse(
+        ` ${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}} `
+      )
+    }
   });
+
   if (!latprod) {
     return res
       .status(400)
@@ -96,7 +112,7 @@ router.get("/latestProduct", async (req, res) => {
 
 router.get("/offerProduct", async (req, res) => {
   let offprod = await product.productModel.find({
-    offerprice: { $lt: price }
+    isTodayOffer: { $eq: true }
   });
   if (!offprod) {
     return res
